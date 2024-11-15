@@ -1,0 +1,4 @@
+chart:
+  repoURL: https://github.com/ymatsiuk/argo.git
+  name: namespaces
+  version: 0.1.0
