@@ -1,0 +1,78 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: app-of-apps
+  namespace: default
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+        - git:
+            repoURL: https://github.com/ymatsiuk/argo.git
+            revision: HEAD
+            files:
+            # applications/<project>/<app>/<env>/chart.yaml
+            - path: "applications/*/*/*/chart.yaml"
+        - clusters:
+            selector:
+              matchLabels:
+                argocd.argoproj.io/secret-type: cluster
+                environment: '{{ index .path.segments 3 }}'
+  # templatePatch allows us to use conditionals
+  # .chart.name is only required if we pull the chart from helm repository
+  # .chart.path is only required if we pull the chart from git repository
+  # .chart.version is the version in helm repo for helm and HEAD for git
+  # .chart.releaseName is set to application name by default
+  # .chart.serversideapply is only set on application creation and ignored on updates
+  templatePatch: |
+    spec:
+      syncPolicy:
+        automated:
+         selfHeal: true
+         prune: true
+         allowEmpty: true
+        retry:
+          limit: -1
+          backoff:
+            duration: 1m
+            factor: 2
+            maxDuration: 10m
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply={{ dig "chart" "serversideapply" false . }}
+      sources:
+      - repoURL: https://github.com/ymatsiuk/argo.git
+        targetRevision: HEAD
+        ref: values
+      - repoURL: https://github.com/ymatsiuk/argo.git
+        targetRevision: HEAD
+        directory:
+          recurse: true
+          exclude: '{config.yaml,values.yaml}'
+        path: {{ .path.path }}
+      - repoURL: '{{ .chart.repoURL }}'
+        targetRevision: '{{ dig "chart" "version" "HEAD" . }}'
+        {{- if hasKey .chart "name" }}
+        chart: '{{ .chart.name }}'
+        {{- end }}
+        {{- if hasKey .chart "path" }}
+        path: '{{ .chart.path }}'
+        {{- end }}
+        helm:
+          {{- if hasKey .chart "releasename" }}
+          releaseName: '{{ .chart.releasename }}'
+          {{- end }}
+          ignoreMissingValueFiles: true
+          valueFiles:
+          - '$values/applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}/values.yaml'
+          - '$values/{{ .path.path }}/values.yaml'
+  template:
+    metadata:
+      name: '{{ (index .path.segments 2 | trunc 53) }}'
+    spec:
+      project: '{{ index .path.segments 1 }}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ dig "chart" "namespace" (index .path.segments 2) . }}'

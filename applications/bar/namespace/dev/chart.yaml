@@ -1,0 +1,5 @@
+chart:
+  repoURL: https://github.com/ymatsiuk/argo.git
+  path: charts/namespaces
+  serversideapply: true
+  namespace: default

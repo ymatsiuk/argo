@@ -1,0 +1,9 @@
+# Example:
+# namespaces:
+#   - name: foo
+#     labels:
+#       kubernetes.io/foo: "foo"
+#     annotations:
+#       kubernetes.io/bar: "bar"
+#   - name: bar
+#     linkerd: disabled

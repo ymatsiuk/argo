@@ -1,0 +1,47 @@
+---
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: foo
+  namespace: default
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  sourceRepos:
+  - '*'
+
+---
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: bar
+  namespace: default
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  sourceRepos:
+  - '*'
+
+---
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: infrastructure
+  namespace: default
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  sourceRepos:
+  - '*'

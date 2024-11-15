@@ -1,0 +1,6 @@
+namespaces:
+  - name: foo
+    annotations:
+      foo.io/foo: foo
+    labels:
+      foo.io/foo: foo

@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+spec:
+  syncPolicy:
+    automated:
+     selfHeal: true
+     prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    path: apps
+    repoURL: https://github.com/ymatsiuk/argo.git
+    targetRevision: HEAD

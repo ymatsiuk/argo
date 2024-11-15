@@ -1,0 +1,18 @@
+configs:
+  repositories:
+    argocd:
+      name: argocd
+      type: git
+      url: https://github.com/ymatsiuk/argo.git
+  clusterCredentials:
+     dev:
+        server: https://kubernetes.default.svc
+        name: dev
+        labels:
+          environment: dev
+        config: {}
+dex:
+  enabled: false
+global:
+  logging:
+    level: debug

@@ -1,0 +1,5 @@
+chart:
+  repoURL: https://ealenn.github.io/charts
+  name: echo-server
+  version: 0.5.0
+  serversideapply: true

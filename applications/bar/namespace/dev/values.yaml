@@ -1,0 +1,4 @@
+namespaces:
+  - name: bar
+    linkerd: disabled
+  - name: bla
