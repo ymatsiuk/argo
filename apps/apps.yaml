@@ -5,6 +5,7 @@ metadata:
   namespace: default
 spec:
   goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
     - matrix:
         generators:
@@ -13,6 +14,11 @@ spec:
             revision: HEAD
             files:
             - path: "applications/*/*/*/chart.yaml"
+        - list:
+            elements:
+            - valueFiles:
+              - "applications/{{ item.path.segments.1 }}/{{ item.path.segments.2 }}/values.yaml"
+              - "applications/{{ item.path.segments.1 }}/{{ item.path.segments.2 }}/{{ item.path.segments.3 }}/values.yaml"
         - clusters:
             selector:
               matchLabels:
@@ -27,31 +33,18 @@ spec:
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{ .chart.namespace | default (index .path.segments 2) }}'
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - CreateNamespace=true
-          - ServerSideApply={{ .chart.serversideapply | default "true" }}
-      sources:
-      - repoURL: https://github.com/ymatsiuk/argo.git
-        targetRevision: HEAD
-        ref: src
+      source:
       - repoURL: '{{ .chart.repoURL }}'
         chart: '{{ .chart.name }}'
         targetRevision: '{{ .chart.version | toString }}'
-        {{- if .chart.path }}
-        path: '{{ .chart.path }}'
-        {{- end }}
         helm:
           releaseName: '{{ .chart.releasename | default (index .path.segments 2 | trunc 53) }}'
           ignoreMissingValueFiles: true
+  templatePatch: |
+    spec:
+      source:
+        helm:
           valueFiles:
-          - '$src/applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}/values.yaml'
-          - '$src/applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}/{{ index .path.segments 3 }}/values.yaml'
-      - repoURL: https://github.com/ymatsiuk/argo.git
-        targetRevision: HEAD
-        directory:
-          recurse: true
-        path: 'applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}/{{ index .path.segments 3 }}'
+          {{- range $valueFile := .valueFiles }}
+            - {{ $valueFile }}
+          {{- end }}
