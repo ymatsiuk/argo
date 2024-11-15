@@ -16,7 +16,8 @@ spec:
             - path: "applications/*/*/*/chart.yaml"
         - list:
             elements:
-            - valueFiles:
+            - cluster: dev
+              valueFiles:
               - "applications/{{ item.path.segments.1 }}/{{ item.path.segments.2 }}/values.yaml"
               - "applications/{{ item.path.segments.1 }}/{{ item.path.segments.2 }}/{{ item.path.segments.3 }}/values.yaml"
         - clusters:
