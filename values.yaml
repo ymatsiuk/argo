@@ -4,6 +4,11 @@ configs:
       name: argocd
       type: git
       url: https://github.com/ymatsiuk/argo.git
+    bitnamicharts:
+      name: bitnami
+      type: helm
+      url: registry-1.docker.io/bitnamicharts
+      enableOCI: "true"
   clusterCredentials:
      dev:
         server: https://kubernetes.default.svc
