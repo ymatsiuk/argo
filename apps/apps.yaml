@@ -55,7 +55,7 @@ spec:
         targetRevision: HEAD
         directory:
           recurse: true
-          exclude: '{config.yaml,values.yaml}'
+          exclude: '{chart.yaml,values.yaml}'
         path: {{ .path.path }}
       # Source of the application/environment level Helm Charts values.yaml
       # This would apply environment values on top of common application values
