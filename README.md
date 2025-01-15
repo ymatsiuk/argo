@@ -92,7 +92,8 @@ chart:
 
 ```
 applications/myproject/myapp/dev/chart.yaml
-applications/myproject/myapp/values.yaml
-applications/myproject/myapp/dev/values.yaml
 applications/myproject/myapp/dev/rolebindings.yaml
+applications/myproject/myapp/dev/values.yaml
+applications/myproject/myapp/values.yaml
+applications/myproject/myapp/configmap.yaml
 ```

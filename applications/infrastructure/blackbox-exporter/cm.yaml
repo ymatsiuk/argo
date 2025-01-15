@@ -1,0 +1,7 @@
+# this CM should be deployed to every cluster in every env to avoid repetition
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test
+data:
+  foo: bar

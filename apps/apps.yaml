@@ -43,15 +43,22 @@ spec:
           - CreateNamespace=true
           - ServerSideApply={{ dig "chart" "serversideapply" false . }}
       sources:
+      # Source of the application level shared resources
       - repoURL: https://github.com/ymatsiuk/argo.git
         targetRevision: HEAD
-        ref: values
+        directory:
+          recurse: false
+          exclude: '{values.yaml}'
+        path: applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}
+      # Source of the environment level shared resources
       - repoURL: https://github.com/ymatsiuk/argo.git
         targetRevision: HEAD
         directory:
           recurse: true
           exclude: '{config.yaml,values.yaml}'
         path: {{ .path.path }}
+      # Source of the application/environment level Helm Charts values.yaml
+      # This would apply environment values on top of common application values
       - repoURL: '{{ .chart.repoURL }}'
         targetRevision: '{{ dig "chart" "version" "HEAD" . }}'
         {{- if hasKey .chart "name" }}
@@ -66,8 +73,8 @@ spec:
           {{- end }}
           ignoreMissingValueFiles: true
           valueFiles:
-          - '$values/applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}/values.yaml'
-          - '$values/{{ .path.path }}/values.yaml'
+          - 'applications/{{ index .path.segments 1 }}/{{ index .path.segments 2 }}/values.yaml'
+          - '{{ .path.path }}/values.yaml'
   template:
     metadata:
       name: '{{ (index .path.segments 2 | trunc 53) }}'
